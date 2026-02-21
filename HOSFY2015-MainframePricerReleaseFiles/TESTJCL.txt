@@ -1,0 +1,126 @@
+//K1P6TS66 JOB (BFNCBA26580,B110),'K1P6  KUNKEL',MSGCLASS=Q,
+//             MSGLEVEL=1,
+//             CLASS=C,NOTIFY=K1P6
+//*
+/*JOBPARM FORMS=PX24,COPIES=1,LINECT=0
+//*
+//JOBLIB    DD DSN=SYS1.@CEE.SCEERUN,DISP=SHR
+//**================================================================***
+//* ADD A JOBLIB OR STEPLIB STMT FOR 'SYS1.@CEE.SCEERUN'  *           *
+//*  TO YOUR RUNSTREAM JCL.                               *           *
+//**================================================================***
+//*
+//STEP02  EXEC PGM=IEFBR14
+//*
+//DD1       DD DSN=K1P6.@BFN2699.HOSP150.RATE150,
+//             SPACE=(TRK,(1)),
+//             DISP=(MOD,DELETE)
+//*
+//DD2       DD DSN=K1P6.@BFN2699.HOSP150.SASLIST,
+//             SPACE=(TRK,(1)),
+//             DISP=(MOD,DELETE)
+/*
+//*
+//**================================================================***
+//RUN       EXEC PGM=HOSOP150,REGION=9M
+//STEPLIB   DD DSN=K1P6.@BFN2699.HOSLOAD,DISP=SHR
+//SYSUDUMP  DD SYSOUT=*
+//SYSPUNCH  DD SYSOUT=*
+//SYSOUT    DD SYSOUT=*
+//SYSOUR    DD SYSOUT=*
+//SYSABOUT  DD SYSOUT=*
+//ZDSTATS   DD SYSOUT=*
+//**================================================================***
+//*
+//BILLFILE  DD DSN=K1P6.@BFN2699.HOSP150.BILL215E,
+//*BILLFILE  DD DSN=K1P6.@BFN2699.HOSP150.BILL215C.TEST#4,
+//             DISP=SHR
+//*
+//**================================================================***
+//*
+//MSAFILE   DD DSN=K1P6.@BFN2699.HOSP150.MSAH050,
+//             DISP=SHR
+//*
+//**================================================================***
+//*
+//CBSAFILE  DD DSN=K1P6.@BFN2699.HOSPICE.CBSA150.DATA.SRTED,
+//**CBSAFILE  DD DSN=K1P6.@BFN2699.HOSP150.CBSA150.DATA.SRTED,
+//             DISP=SHR
+//**================================================================***
+//*
+//PROVFILE  DD DSN=K1P6.@BFN2699.HOSP150.PROV150,
+//             DISP=SHR
+//**================================================================***
+//**                                                                ***
+//**================================================================***
+//*
+//RATEFILE  DD DSN=K1P6.@BFN2699.HOSP150.RATE150,
+//             DISP=(NEW,CATLG,CATLG),
+//             SPACE=(TRK,(20,10),RLSE),
+//             DCB=(RECFM=FB,LRECL=215)
+/*
+//*
+//LIST    EXEC SAS93,WORK='500,100'
+//*
+//INDD      DD DSN=K1P6.@BFN2699.HOSP150.RATE150,
+//             DISP=SHR
+//*
+//**================================================================***
+//*                                                                   *
+//*                                                                   *
+//**================================================================***
+//**================================================================***
+//*SAS.SASLIST DD SYSOUT=(Y,,PX16),COPIES=1,FREE=CLOSE (STARTED HERE) *
+//**================================================================***
+//*
+//SAS.SASLIST DD DSN=K1P6.@BFN2699.HOSP150.SASLIST,
+//             DISP=(NEW,CATLG,DELETE),
+//             SPACE=(TRK,(20,10),RLSE),
+//             DCB=(LRECL=137,BLKSIZE=7398,RECFM=VBA)
+//*            RECFM=FB,LRECL=133
+//*
+//SYSIN     DD *
+ DATA AA;
+ INFILE INDD;
+    INPUT
+      NPI      $ 01-10
+      PROV     $ 11-16
+      FROMDATE $ 17-24
+      FILLER1  $ 25-32
+      PRMSALUG $ 33-37
+      PROVMSA  $ 33-36
+      PROVLUG  $ 37
+      PROVCBSA $ 33-37
+      BNMSALUG $ 38-42
+      BENEMSA  $ 38-41
+      BENELUGR $ 42
+      BENECBSA $ 38-42
+      FILLER2  $ 43-52
+      PROVWGIN $ 53-58
+      BENEWGIN $ 59-64
+      FILLER3  $ 65-84
+      QIPIND   $ 85
+      REV1     $ 86-89
+      HCPC1    $ 90-94
+      UNITS1   $ 95-101
+      THRPYCG1 $ 102-109
+      REV2     $ 110-113
+      HCPC2    $ 114-118
+      UNITS2   $ 119-125
+      THRPYCG2 $ 126-133
+      REV3     $ 134-137
+      HCPC3    $ 138-142
+      UNITS3   $ 143-149
+      THRPYCG3 $ 150-157
+      REV4     $ 158-161
+      HCPC4    $ 162-166
+      UNITS4   $ 167-173
+      THRPYCG4 $ 174-181
+      RETDATA  $ 182-191
+      PAYAMT   $ 182-189
+      RTC      $ 190-191
+      FILLER4  $ 192-215;
+  PROC PRINT;
+/*
+//
+

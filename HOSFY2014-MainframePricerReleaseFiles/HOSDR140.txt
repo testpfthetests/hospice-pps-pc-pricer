@@ -1,0 +1,748 @@
+000100 IDENTIFICATION DIVISION.                                         00010000
+000200 PROGRAM-ID.           HOSDR140.                                  00020001
+000300*AUTHOR.  DDS TEAM                                                00030001
+000400*         (CENTERS FOR MEDICARE AND MEDICAID SERVICES)            00040000
+000500*REMARKS. A). HOSPICE DRIVER WILL CALL HOSPR___ MODULE.           00050000
+000600*             CALLS THE HOSPR___ MODULE.                          00060000
+000700*             LOADS THE PROV FILE MSA FILEAND CBSA FILE.          00070000
+000800*             FINDS THE PROV RECORD AND WAGE-INDEX RECORD FOR     00080000
+000900*             GIVEN HOSPICE DATA TO BE PASSED TO HOSPR___ MODULE. 00090000
+001000******************************************************************00100000
+001100*REMARKS.                                                         00110000
+000800*     HOSPR140   REVISIONS FOR OCT 1, 2013                        00131003
+001300*                2014 RATE REVISIONS                              00131103
+000900*                REVISED BILL & RATE RECORD LENGTH FROM 135 TO 21500132006
+000900*                NEW LOGIC FOR QIP INDICATOR                      00133005
+001400*     HOSDR140   NEW PROCESSES OCT 1, 2013                        00140001
+001500*                CALL TO HOSPR140                                 00150001
+001700*     HOSOP140   NEW PROCESSES OCT 1, 2013                        00160001
+001800*                CICS VERSION TO OPEN FILES CALL HOSDR140         00170001
+001900*                                                                 00180000
+001200*     HOSPR130   REVISIONS FOR OCT 1, 2012                        00181001
+001300*                2013 RATE REVISIONS                              00182001
+001400*     HOSDR130   NEW PROCESSES OCT 1, 2012                        00183001
+001500*                CALL TO HOSPR130                                 00184001
+001700*     HOSOP130   NEW PROCESSES OCT 1, 2012                        00185001
+001800*                CICS VERSION TO OPEN FILES CALL HOSDR130         00186001
+001900*                                                                 00187001
+001200*     HOSPR120   REVISIONS FOR OCT 1, 2011                        00190000
+001300*                2012 RATE REVISIONS                              00200000
+001400*     HOSDR120   NEW PROCESSES OCT 1, 2011                        00210000
+001500*                CALL TO HOSPR120                                 00220000
+001700*     HOSOP120   NEW PROCESSES OCT 1, 2011                        00230000
+001800*                CICS VERSION TO OPEN FILES CALL HOSDR120         00240000
+001900*                                                                 00250000
+001200*     HOSPR110   REVISIONS FOR OCT 1, 2010                        00260000
+001300*                2011 RATE REVISIONS                              00270000
+001400*     HOSDR110   NEW PROCESSES OCT 1, 2010                        00280000
+001500*                CALL TO HOSPR110                                 00290000
+001700*     HOSOP110   NEW PROCESSES OCT 1, 2010                        00300000
+001800*                CICS VERSION TO OPEN FILES CALL HOSDR110         00310000
+001900*                                                                 00320000
+001200*     HOSPR100   REVISIONS FOR OCT 1, 2009                        00330000
+001300*                2010 RATE REVISIONS                              00340000
+001400*     HOSDR100   NEW PROCESSES OCT 1, 2009                        00350000
+001500*                CALL TO HOSPR100                                 00360000
+001700*     HOSOP100   NEW PROCESSES OCT 1, 2009                        00370000
+001800*                CICS VERSION TO OPEN FILES CALL HOSDR100         00380000
+001900*                                                                 00390000
+002000*     HOSPR091   REVISIONS FOR JAN 1, 2008                        00400000
+002100*                2009 RATE REVISIONS                              00410000
+002200*     HOSDR091   NEW PROCESSES JAN 1, 2008                        00420000
+002300*                CALL TO HOSPR091                                 00430000
+002400*                STIMULUS PKG RECOMPILE                           00440000
+002500*     HOSOP091   NEW PROCESSES JAN 1, 2008                        00450000
+002600*                CICS VERSION TO OPEN FILES CALL HOSDR091         00460000
+002700*                                                                 00470000
+002800*     HOSPR090   REVISIONS FOR OCT 1, 2008                        00480000
+002900*                2008 RATE REVISIONS                              00490000
+003000*     HOSDR090   NEW PROCESSES OCT 1, 2008                        00500000
+003100*                CALL TO HOSPR090                                 00510000
+003200*     HOSOP090   NEW PROCESSES OCT 1, 2008                        00520000
+003300*                CICS VERSION TO OPEN FILES CALL HOSDR090         00530000
+003400*                                                                 00540000
+003500*     HOSPR081   REVISIONS FOR OCT 1, 2007                        00550000
+003600*                2008 RATE REVISIONS                              00560000
+003700*     HOSDR081   NEW PROCESSES OCT 1, 2007                        00570000
+003800*                CALL TO HOSPR081                                 00580000
+003900*     HOSOP081   NEW PROCESSES OCT 1, 2007                        00590000
+004000*                CICS VERSION TO OPEN FILES CALL HOSDR081         00600000
+004100*                                                                 00610000
+004200*     HOSPR071   REVISIONS FOR JAN 1, 2007                        00620000
+004300*                2007.1-PROCESS-DATA 1 UNIT = 15 MIN CODE 652     00630000
+004400*                2007 CALCULATE HOME RATE BY REVENUE CODE FACTORS 00640000
+004500*     HOSDR071   NEW PROCESSES JAN 1, 2007                        00650000
+004600*                CALL TO HOSPR071                                 00660000
+004700*     HOSOP071   NEW PROCESSES JAN 1, 2007                        00670000
+004800*                CICS VERSION TO OPEN FILES CALL HOSDR071         00680000
+004900*                                                                 00690000
+005000*     HOSPR070   REVISIONS FOR OCT 1, 2006                        00700000
+005100*                2007-PROCESS-DATA                                00710000
+005200*                2007 CALCULATE HOME RATE BY REVENUE CODE FACTORS 00720000
+005300*     HOSDR070   NEW PROCESSES OCT 1, 2006                        00730000
+005400*                CBSA FILE PROCESSING                             00740000
+005500*     HOSOP070   NEW PROCESSES OCT 1, 2006                        00750000
+005600*                CICS VERSION TO OPEN FILES                       00760000
+005700*                                                                 00770000
+005800***************************************************************   00780000
+005900 DATE-COMPILED.                                                   00790000
+006000 ENVIRONMENT DIVISION.                                            00800000
+006100 CONFIGURATION SECTION.                                           00810000
+006200 SOURCE-COMPUTER.            IBM-370.                             00820000
+006300 OBJECT-COMPUTER.            IBM-370.                             00830000
+006400 INPUT-OUTPUT  SECTION.                                           00840000
+006500 FILE-CONTROL.                                                    00850000
+006600                                                                  00860000
+006700 DATA DIVISION.                                                   00870000
+006800 FILE SECTION.                                                    00880000
+006900                                                                  00890000
+007000 WORKING-STORAGE SECTION.                                         00900000
+007100 01  W-STORAGE-REF                  PIC X(46)  VALUE              00910000
+007200     'HOSDR140      - W O R K I N G   S T O R A G E'.             00920001
+007300 01  HOS-VERSION                    PIC X(09)  VALUE 'HOSDR14.0'. 00930001
+007400 01  HOSOP140                       PIC X(08)  VALUE 'HOSOP140'.  00940001
+007500 01  HOSPR140                       PIC X(08)  VALUE 'HOSPR140'.  00950001
+007600 01  EOF-MSA-SW                     PIC 9(01)  VALUE 0.           00960001
+007700 01  EOF-CBSA-SW                    PIC 9(01)  VALUE 0.           00970001
+007800 01  EOF-BILL-SW                    PIC 9(01)  VALUE 0.           00980001
+007900 01  EOF-PROV-SW                    PIC 9(01)  VALUE 0.           00990001
+008000 01  BILL-CTR                       PIC 9(09)  VALUE 0.           01000001
+008100 01  RATE-CTR                       PIC 9(09)  VALUE 0.           01010001
+008200 01  PROV-CTR                       PIC 9(09)  VALUE 0.           01020001
+008300                                                                  01030000
+008400 01  SEARCH-MSA-LUGAR.                                            01040000
+008500     05  SEARCH-MSA.                                              01050000
+008600         10  SEARCH-MSA-POS12  PIC 9(02).                         01060000
+008700         10  SEARCH-MSA-POS34  PIC 9(02).                         01070000
+008800     05  SEARCH-LUGAR          PIC X.                             01080000
+008900                                                                  01090000
+009000 01  SEARCH-CBSA.                                                 01100000
+009100     05  SEARCH-CBSA-POS123    PIC 9(03).                         01110000
+009200     05  SEARCH-CBSA-POS45     PIC 9(02).                         01120000
+009300                                                                  01130000
+009400 01  UT1-STAT.                                                    01140000
+009500     05  UT1-STAT1             PIC X.                             01150000
+009600     05  UT1-STAT2             PIC X.                             01160000
+009700 01  UT2-STAT.                                                    01170000
+009800     05  UT2-STAT1             PIC X.                             01180000
+009900     05  UT2-STAT2             PIC X.                             01190000
+010000 01  UT3-STAT.                                                    01200000
+010100     05  UT3-STAT1             PIC X.                             01210000
+010200     05  UT3-STAT2             PIC X.                             01220000
+010300 01  UT4-STAT.                                                    01230000
+010400     05  UT4-STAT1             PIC X.                             01240000
+010500     05  UT4-STAT2             PIC X.                             01250000
+010600 01  UT5-STAT.                                                    01260000
+010700     05  UT5-STAT1             PIC X.                             01270000
+010800     05  UT5-STAT2             PIC X.                             01280000
+010900                                                                  01290000
+011000***************************************************************   01300000
+011100**************************************************************    01310000
+011200*      MILLINNIUM COMPATIBLE                                 *    01320000
+011300**************************************************************    01330000
+011400 01  PROV-NEW-HOLD.                                               01340000
+011500     02  PROV-NEWREC-HOLD1.                                       01350000
+011600         05  P-NEW-NPI10.                                         01360000
+011700             10  P-NEW-NPI8             PIC X(08).                01370000
+011800             10  P-NEW-NPI-FILLER       PIC X(02).                01380000
+011900         05  P-NEW-PROVIDER-NO.                                   01390000
+012000             10  P-NEW-STATE            PIC 9(02).                01400000
+012100             10  FILLER                 PIC X(04).                01410000
+012200         05  P-NEW-DATE-DATA.                                     01420000
+012300             10  P-NEW-EFF-DATE.                                  01430000
+012400                 15  P-NEW-EFF-DT-CC    PIC 9(02).                01440000
+012500                 15  P-NEW-EFF-DT-YY    PIC 9(02).                01450000
+012600                 15  P-NEW-EFF-DT-MM    PIC 9(02).                01460000
+012700                 15  P-NEW-EFF-DT-DD    PIC 9(02).                01470000
+012800             10  P-NEW-FY-BEGIN-DATE.                             01480000
+012900                 15  P-NEW-FY-BEG-DT-CC PIC 9(02).                01490000
+013000                 15  P-NEW-FY-BEG-DT-YY PIC 9(02).                01500000
+013100                 15  P-NEW-FY-BEG-DT-MM PIC 9(02).                01510000
+013200                 15  P-NEW-FY-BEG-DT-DD PIC 9(02).                01520000
+013300             10  P-NEW-REPORT-DATE.                               01530000
+013400                 15  P-NEW-REPORT-DT-CC PIC 9(02).                01540000
+013500                 15  P-NEW-REPORT-DT-YY PIC 9(02).                01550000
+013600                 15  P-NEW-REPORT-DT-MM PIC 9(02).                01560000
+013700                 15  P-NEW-REPORT-DT-DD PIC 9(02).                01570000
+013800             10  P-NEW-TERMINATION-DATE.                          01580000
+013900                 15  P-NEW-TERM-DT-CC   PIC 9(02).                01590000
+014000                 15  P-NEW-TERM-DT-YY   PIC 9(02).                01600000
+014100                 15  P-NEW-TERM-DT-MM   PIC 9(02).                01610000
+014200                 15  P-NEW-TERM-DT-DD   PIC 9(02).                01620000
+014300         05  P-NEW-WAIVER-CODE          PIC X(01).                01630000
+014400             88  P-NEW-WAIVER-STATE       VALUE 'Y'.              01640000
+014500         05  P-NEW-INTER-NO             PIC 9(05).                01650000
+014600         05  P-NEW-PROVIDER-TYPE        PIC X(02).                01660000
+014700             88  P-N-SOLE-COMMUNITY-PROV    VALUE '01' '11'.      01670000
+014800             88  P-N-REFERRAL-CENTER        VALUE '07' '11'       01680000
+014900                                                  '15' '17'       01690000
+015000                                                  '22'.           01700000
+015100             88  P-N-INDIAN-HEALTH-SERVICE  VALUE '08'.           01710000
+015200             88  P-N-REDESIGNATED-RURAL-YR1 VALUE '09'.           01720000
+015300             88  P-N-REDESIGNATED-RURAL-YR2 VALUE '10'.           01730000
+015400             88  P-N-SOLE-COM-REF-CENT      VALUE '11'.           01740000
+015500             88  P-N-MDH-REBASED-FY90       VALUE '14' '15'.      01750000
+015600             88  P-N-MDH-RRC-REBASED-FY90   VALUE '15'.           01760000
+015700             88  P-N-SCH-REBASED-FY90       VALUE '16' '17'.      01770000
+015800             88  P-N-SCH-RRC-REBASED-FY90   VALUE '17'.           01780000
+015900             88  P-N-MEDICAL-ASSIST-FACIL   VALUE '18'.           01790000
+016000             88  P-N-EACH                   VALUE '21' '22'.      01800000
+016100             88  P-N-EACH-REFERRAL-CENTER   VALUE '22'.           01810000
+016200             88  P-N-NHCMQ-II-SNF           VALUE '32'.           01820000
+016300             88  P-N-NHCMQ-III-SNF          VALUE '33'.           01830000
+016400         05  P-NEW-CURRENT-CENSUS-DIV   PIC 9(01).                01840000
+016500             88  P-N-NEW-ENGLAND            VALUE  1.             01850000
+016600             88  P-N-MIDDLE-ATLANTIC        VALUE  2.             01860000
+016700             88  P-N-SOUTH-ATLANTIC         VALUE  3.             01870000
+016800             88  P-N-EAST-NORTH-CENTRAL     VALUE  4.             01880000
+016900             88  P-N-EAST-SOUTH-CENTRAL     VALUE  5.             01890000
+017000             88  P-N-WEST-NORTH-CENTRAL     VALUE  6.             01900000
+017100             88  P-N-WEST-SOUTH-CENTRAL     VALUE  7.             01910000
+017200             88  P-N-MOUNTAIN               VALUE  8.             01920000
+017300             88  P-N-PACIFIC                VALUE  9.             01930000
+017400         05  P-NEW-CURRENT-DIV   REDEFINES                        01940000
+017500                    P-NEW-CURRENT-CENSUS-DIV   PIC 9(01).         01950000
+017600             88  P-N-VALID-CENSUS-DIV    VALUE 1 THRU 9.          01960000
+017700         05  P-NEW-MSA-DATA.                                      01970000
+017800             10  P-NEW-CHG-CODE-INDEX       PIC X.                01980000
+017900             10  P-NEW-GEO-LOC-MSAX         PIC X(04) JUST RIGHT. 01990000
+018000             10  P-NEW-GEO-LOC-MSAX-RUR REDEFINES                 02000000
+018100                                     P-NEW-GEO-LOC-MSAX.          02010000
+018200                 15  P-NEW-RURAL1    PIC X(02).                   02020000
+018300                     88  P-NEW-GEO-RURAL1   VALUE '  '.           02030000
+018400                 15  P-NEW-GEO-RURAL2    PIC X(02).               02040000
+018500             10  P-NEW-GEO-LOC-MSA9   REDEFINES                   02050000
+018600                             P-NEW-GEO-LOC-MSAX-RUR PIC 9(04).    02060000
+018700             10  P-NEW-WAGE-INDEX-LOC-MSA   PIC X(04) JUST RIGHT. 02070000
+018800             10  P-NEW-STAND-AMT-LOC-MSA    PIC X(04) JUST RIGHT. 02080000
+018900             10  P-NEW-STAND-AMT-LOC-MSA9                         02090000
+019000       REDEFINES P-NEW-STAND-AMT-LOC-MSA.                         02100000
+019100                 15  P-NEW-RURAL-1ST.                             02110000
+019200                     20  P-NEW-STAND-RURAL  PIC XX.               02120000
+019300                         88  P-NEW-STD-RURAL-CHECK VALUE '  '.    02130000
+019400                 15  P-NEW-RURAL-2ND        PIC XX.               02140000
+019500         05  P-NEW-SOL-COM-DEP-HOSP-YR PIC XX.                    02150000
+019600                 88  P-NEW-SCH-YRBLANK    VALUE   '  '.           02160000
+019700                 88  P-NEW-SCH-YR82       VALUE   '82'.           02170000
+019800                 88  P-NEW-SCH-YR87       VALUE   '87'.           02180000
+019900         05  P-NEW-LUGAR                    PIC X.                02190000
+020000         05  P-NEW-TEMP-RELIEF-IND          PIC X.                02200000
+020100         05  P-NEW-FED-PPS-BLEND-IND        PIC X.                02210000
+020200         05  FILLER                         PIC X(05).            02220000
+020300     02  PROV-NEWREC-HOLD2.                                       02230000
+020400         05  P-NEW-VARIABLES.                                     02240000
+020500             10  P-NEW-FAC-SPEC-RATE       PIC 9(05)V9(02).       02250000
+020600             10  P-NEW-COLA                PIC 9(01)V9(03).       02260000
+020700             10  P-NEW-INTERN-RATIO        PIC 9(01)V9(04).       02270000
+020800             10  P-NEW-BED-SIZE            PIC 9(05).             02280000
+020900             10  P-NEW-OPER-CSTCHG-RATIO   PIC 9(01)V9(03).       02290000
+021000             10  P-NEW-CMI                 PIC 9(01)V9(04).       02300000
+021100             10  P-NEW-SSI-RATIO           PIC V9(04).            02310000
+021200             10  P-NEW-MEDICAID-RATIO      PIC V9(04).            02320000
+021300             10  P-NEW-PPS-BLEND-YR-IND    PIC X(01).             02330000
+021400             10  P-NEW-PRUP-UPDATE-FACTOR  PIC 9(01)V9(05).       02340000
+021500             10  P-NEW-DSH-PERCENT         PIC V9(04).            02350000
+021600             10  P-NEW-FYE-DATE            PIC 9(08).             02360000
+021700         05  P-NEW-CBSA-DATA.                                     02370000
+021800             10  W-P-NEW-CBSA-SPEC-PAY-IND     PIC X.             02380000
+021900                 88  P-NEW-CBSA-WI-GEO        VALUE 'N'.          02390000
+022000                 88  P-NEW-CBSA-WI-RECLASS    VALUE 'Y'.          02400000
+022100                 88  P-NEW-CBSA-WI-SPECIAL    VALUE '1' '2'.      02410000
+022200***                  1 = ANYTHING OR HOLD HARMLESS WITH SPEC WI   02420000
+022300***                  2 = RECLASS WITH SPEC WI                     02430000
+022400             10  W-P-NEW-CBSA-HOSP-QUAL-IND    PIC X.             02440000
+022500                                                                  02450000
+022600             10  W-P-NEW-CBSA-GEO-LOC       PIC X(05) JUST RIGHT. 02460000
+022700             10  W-P-NEW-CBSA-GEO-RURAL REDEFINES                 02470000
+022800                 W-P-NEW-CBSA-GEO-LOC.                            02480000
+022900                 15  W-P-NEW-CBSA-GEO-RURAL1ST PIC XXX.           02490000
+023000                     88  W-P-NEW-CBSA-GEO-RURAL1  VALUE '   '.    02500000
+023100                 15  W-P-NEW-CBSA-GEO-RURAL2ND PIC XX.            02510000
+023200                                                                  02520000
+023300             10  W-P-NEW-CBSA-RECLASS-LOC   PIC X(05) JUST RIGHT. 02530000
+023400             10  W-P-NEW-CBSA-STAND-AMT-LOC PIC X(05) JUST RIGHT. 02540000
+023500             10  W-P-NEW-CBSA-SPEC-WAGE-INDEX  PIC 9(02)V9(04).   02550000
+023600     02  PROV-NEWREC-HOLD3.                                       02560000
+023700         05  P-NEW-PASS-AMT-DATA.                                 02570000
+023800             10  P-NEW-PASS-AMT-CAPITAL    PIC 9(04)V99.          02580000
+023900             10  P-NEW-PASS-AMT-DIR-MED-ED PIC 9(04)V99.          02590000
+024000             10  P-NEW-PASS-AMT-ORGAN-ACQ  PIC 9(04)V99.          02600000
+024100             10  P-NEW-PASS-AMT-PLUS-MISC  PIC 9(04)V99.          02610000
+024200         05  P-NEW-CAPI-DATA.                                     02620000
+024300             15  P-NEW-CAPI-PPS-PAY-CODE   PIC X.                 02630000
+024400             15  P-NEW-CAPI-HOSP-SPEC-RATE PIC 9(04)V99.          02640000
+024500             15  P-NEW-CAPI-OLD-HARM-RATE  PIC 9(04)V99.          02650000
+024600             15  P-NEW-CAPI-NEW-HARM-RATIO PIC 9(01)V9999.        02660000
+024700             15  P-NEW-CAPI-CSTCHG-RATIO   PIC 9V999.             02670000
+024800             15  P-NEW-CAPI-NEW-HOSP       PIC X.                 02680000
+024900             15  P-NEW-CAPI-IME            PIC 9V9999.            02690000
+025000             15  P-NEW-CAPI-EXCEPTIONS     PIC 9(04)V99.          02700000
+025100             15  P-VAL-BASED-PURCH-SCORE   PIC 9V999.             02710000
+025200         05  FILLER                        PIC X(18).             02720000
+025300******************************************************************02730000
+025400**-----------------------------------------------------------**   02740000
+025500 LINKAGE SECTION.                                                 02750000
+025600***************************************************************   02760000
+025700*                 * * * * * * * * *                           *   02770000
+025800***************************************************************   02780000
+025900***************************************************************   02790000
+026000*    THIS DATA IS CALCULATED BY THIS HOSPRICER PROGRAM        *   02800000
+026100*    AND PASSED BACK                                          *   02810000
+026200*            RETURN CODE VALUES (HLD-RTC)                     *   02820000
+026300*                                                             *   02830000
+026400*            HLD-RTC                                          *   02840000
+026500*              00 = HOME RATE RETURNED                        *   02850000
+026600*                                                             *   02860000
+026700*            HLD-RTC   NO RATE RETURNED                       *   02870000
+026800*              10 = BAD UNITS                                 *   02880000
+026900*                                                             *   02890000
+027000*              20 = BAD UNITS2 < 8                            *   02900000
+027100*                                                             *   02910000
+027200*              30 = BAD MSA CODE OR CBSA CODE                 *   02920000
+027300*                                                             *   02930000
+027400*              40 = BAD HOSPICE WAGE INDEX FROM MSAFILE       *   02940000
+027500*                                                             *   02950000
+027600*              50 = BAD BENE    WAGE INDEX FROM MSAFILE       *   02960000
+027700*                                                             *   02970000
+027800*              51 = BAD PROV NUMBER                           *   02980000
+027900*                                                             *   02990000
+028000***************************************************************   03000000
+032500                                                                  03450000
+014800***************************************************************   03451002
+039100 01  HOLD-BILL-DATA.                                              03452002
+039200     10  HLD-NPI                  PIC X(10).                      03453002
+039300     10  HLD-PROV-NO              PIC X(06).                      03454002
+039400     10  HLD-FROM-DATE-ALL.                                       03455002
+039500         15  HLD-FROM-CC          PIC 99.                         03456002
+039600         15  HLD-FROM-DATE.                                       03457002
+039700             20  HLD-FROM-YY      PIC 99.                         03458002
+039800             20  HLD-FROM-MM      PIC 99.                         03459002
+039900             20  HLD-FROM-DD      PIC 99.                         03459102
+040000*                                                                 03459204
+035700     10  FILLER                   PIC X(08).                      03459304
+040000*                                                                 03459402
+040100     10  HLD-PROV-MSA-LUGAR.                                      03459502
+040200         15  HLD-PROV-MSA         PIC X(04).                      03459602
+040300         15  HLD-PROV-LUGAR       PIC X.                          03459702
+040400     10  HLD-PROV-CBSA REDEFINES                                  03459802
+040500                       HLD-PROV-MSA-LUGAR PIC X(05).              03459902
+040600*                                                                 03460002
+040700     10  HLD-BENE-MSA-LUGAR.                                      03460102
+040800         15  HLD-BENE-MSA         PIC X(04).                      03460202
+040900         15  HLD-BENE-LUGAR       PIC X.                          03460302
+041000     10  HLD-BENE-CBSA REDEFINES                                  03460402
+041100                       HLD-BENE-MSA-LUGAR PIC X(05).              03460502
+035500*                                                                 03460602
+035700     10  FILLER                   PIC X(10).                      03460702
+041200*                                                                 03460802
+041300     10  HLD-PROV-WAGE-IND        PIC 9(02)V9(04).                03460902
+041400     10  HLD-BENE-WAGE-IND        PIC 9(02)V9(04).                03461002
+035500*                                                                 03461102
+035700     10  FILLER                   PIC X(20).                      03461202
+035500*                                                                 03461302
+035700     10  HLD-QIP-REDUCTION-IND    PIC X.                          03461402
+035500*                                                                 03461502
+041500     10  HLD-GROUP1.                                              03461602
+041600         15  HLD-REV1             PIC XXXX.                       03461702
+036000         15  HLD-HCPC1            PIC X(05).                      03461802
+041700         15  HLD-UNITS1           PIC 9(07).                      03461902
+041800         15  HLD-THEIR-PAY-CHG1   PIC 9(06)V99.                   03462002
+041900     10  HLD-GROUP2.                                              03462102
+042000         15  HLD-REV2             PIC XXXX.                       03462202
+036000         15  HLD-HCPC2            PIC X(05).                      03462302
+042100         15  HLD-UNITS2           PIC 9(07).                      03462402
+042200         15  HLD-THEIR-PAY-CHG2   PIC 9(06)V99.                   03462502
+042300     10  HLD-GROUP3.                                              03462602
+042400         15  HLD-REV3             PIC XXXX.                       03462702
+036000         15  HLD-HCPC3            PIC X(05).                      03462802
+042500         15  HLD-UNITS3           PIC 9(07).                      03462902
+042600         15  HLD-THEIR-PAY-CHG3   PIC 9(06)V99.                   03463002
+042700     10  HLD-GROUP4.                                              03463102
+042800         15  HLD-REV4             PIC XXXX.                       03463202
+036000         15  HLD-HCPC4            PIC X(05).                      03463302
+042900         15  HLD-UNITS4           PIC 9(07).                      03463402
+043000         15  HLD-THEIR-PAY-CHG4   PIC 9(06)V99.                   03463502
+043100     10  HLD-RETURNED-DATA.                                       03463602
+043200         15  HLD-PAY-AMT          PIC 9(06)V99.                   03463702
+043300         15  HLD-RTC              PIC XX.                         03463802
+043400     10  FILLER                   PIC X(24).                      03463902
+043500                                                                  03464002
+043600***************************************************************   03464102
+014900*----------------------------------------------------------****   03464202
+032600******************************************************************03465000
+032700*                                                                 03470000
+032800*    FILE MUST BE PROV-NO EFF-DATE SEQUENCE                       03480000
+032900*                                                                 03490000
+033000******************************************************************03500000
+033100                                                                  03510000
+033200 01  PROV-TABLE.                                                  03520000
+033300     02  PROV-ENTRIES               OCCURS 2400                   03530000
+033400                                    ASCENDING KEY IS PROV-NO      03540000
+033500                                    INDEXED BY PX1 PX2 PX3.       03550000
+033600         10  PROV-DATA1.                                          03560000
+033700             15  PROV-NPI10.                                      03570000
+033800                 20  PROV-NPI8     PIC X(08).                     03580000
+033900                 20  PROV-NPI-FIL  PIC X(02).                     03590000
+034000             15  PROV-NO           PIC X(06).                     03600000
+034100             15  PROV-EFF-DATE     PIC X(08).                     03610000
+034200             15  FILLER            PIC X(56).                     03620000
+034300                                                                  03630000
+034400 01  PROV-DATA-2.                                                 03640000
+034500     02  PROV-ENTRIES2              OCCURS 2400                   03650000
+034600                                    INDEXED BY PD2.               03660000
+034700         10  PROV-DATA2            PIC X(80).                     03670000
+034800                                                                  03680000
+034900 01  PROV-DATA-3.                                                 03690000
+035000     02  PROV-ENTRIES3              OCCURS 2400                   03700000
+035100                                    INDEXED BY PD3.               03710000
+035200         10  PROV-DATA3            PIC X(80).                     03720000
+035300                                                                  03730000
+035400***************************************************************   03740000
+035500***************************************************************   03750000
+035600 01  MSA-WI-TABLE.                                                03760000
+035700     05  M-MSA-DATA              OCCURS 4000                      03770007
+035800                                 INDEXED BY MU1 MU2 MU3.          03780000
+035900         10  MSA-MSA-LUGAR.                                       03790000
+036000             15  MSA-MSA       PIC 9(04).                         03800000
+036100             15  MSA-LUGAR     PIC X.                             03810000
+036200         10  MSA-EFFDTE        PIC X(08).                         03820000
+036300         10  MSA-WAGE-IND      PIC S9(02)V9(04).                  03830000
+036400                                                                  03840000
+036500***************************************************************   03850000
+036600***************************************************************   03860000
+036700 01  CBSA-WI-TABLE.                                               03870000
+036800     05  M-CBSA-DATA             OCCURS 6000                      03880007
+036900                                 INDEXED BY CU1 CU2 CU3.          03890000
+037000         10  M-CBSA              PIC 9(05).                       03900000
+037100         10  M-CBSA-EFFDTE       PIC X(08).                       03910000
+037200         10  M-CBSA-WAGE-IND     PIC S9(02)V9(04).                03920000
+037300                                                                  03930000
+037400***************************************************************   03940000
+037500**-----------------------------------------------------------**   03950000
+037600                                                                  03960000
+037700 PROCEDURE DIVISION USING HOLD-BILL-DATA                          03970000
+037800                          PROV-TABLE                              03980000
+037900                          PROV-DATA-2                             03990000
+038000                          PROV-DATA-3                             04000000
+038100                          MSA-WI-TABLE                            04010000
+038200                          CBSA-WI-TABLE.                          04020000
+038300**-----------------------------------------------------------**   04030000
+038400**-----------------------------------------------------------**   04040000
+038500                                                                  04050000
+038600     PERFORM 0200-PROCESS-RECORDS                                 04060000
+038600        THRU 0200-EXIT.                                           04061000
+038700                                                                  04070000
+038800     GOBACK.                                                      04080000
+038900                                                                  04090000
+039000                                                                  04100000
+039100 0200-PROCESS-RECORDS.                                            04110000
+039200**                                                                04120000
+039300     MOVE ALL '0'              TO HLD-RETURNED-DATA.              04130000
+039400     IF EOF-BILL-SW = 0                                           04140000
+039500           ADD 1               TO BILL-CTR                        04150000
+039600           PERFORM 0300-PROCESS-DATA                              04160000
+039600              THRU 0300-EXIT.                                     04161000
+039700                                                                  04170000
+039800 0200-EXIT.  EXIT.                                                04180000
+039900                                                                  04190000
+040000 0300-PROCESS-DATA.                                               04200000
+040100****    GET PROV RECORD FOR HOSPICE MSA OR CBSA                   04210000
+040200****    GET PROV RECORD FOR HOSPICE MSA OR CBSA                   04220000
+040300                                                                  04230000
+040400     PERFORM 0700-GET-PROVIDER                                    04240000
+040400        THRU 0700-EXIT.                                           04241000
+040500                                                                  04250000
+040600     IF HLD-RTC NOT = 00                                          04260000
+040700        GO TO 0300-EXIT.                                          04270000
+040800                                                                  04280000
+040900     IF P-NEW-EFF-DATE < 20051001 AND                             04290000
+041000        HLD-FROM-DATE-ALL > 20050930                              04300000
+041100        MOVE 51                TO HLD-RTC                         04310000
+041600                                                                  04311000
+041600                                                                  04341000
+041500        GO TO 0300-EXIT.                                          04350000
+041600                                                                  04360000
+041700                                                                  04370000
+041800     IF HLD-FROM-DATE-ALL > 20050930                              04380000
+041900        PERFORM 0375-GET-CBSA                                     04390000
+041900           THRU 0375-EXIT                                         04391000
+042000     ELSE                                                         04400000
+042100        PERFORM 0350-GET-MSA                                      04410000
+042100           THRU 0350-EXIT.                                        04411000
+042200                                                                  04420000
+042300 0300-EXIT.   EXIT.                                               04430000
+042400                                                                  04440000
+042500 0350-GET-MSA.                                                    04450000
+042600                                                                  04460000
+042700****    GET PROV-HOSP WAGE INDEX                                  04470000
+042800****    GET PROV-HOSP WAGE INDEX                                  04480000
+042900                                                                  04490000
+043000     IF P-NEW-GEO-RURAL1                                          04500000
+043100        MOVE '99'              TO SEARCH-MSA-POS12                04510000
+043200        MOVE P-NEW-GEO-RURAL2  TO SEARCH-MSA-POS34                04520000
+043300     ELSE                                                         04530000
+043400        MOVE P-NEW-GEO-LOC-MSA9                                   04540000
+043400                               TO SEARCH-MSA.                     04541000
+043500                                                                  04550000
+043600     IF HLD-FROM-DATE-ALL < 19991001                              04560000
+043700        MOVE P-NEW-LUGAR       TO SEARCH-LUGAR                    04570000
+043800     ELSE                                                         04580000
+043900        MOVE SPACE             TO SEARCH-LUGAR.                   04590000
+044000                                                                  04600000
+044100     MOVE P-NEW-GEO-LOC-MSAX   TO HLD-PROV-MSA.                   04610000
+044200                                                                  04620000
+044300     IF HLD-FROM-DATE-ALL < 19991001                              04630000
+044400        MOVE P-NEW-LUGAR       TO HLD-PROV-LUGAR                  04640000
+044500     ELSE                                                         04650000
+044600        MOVE SPACE             TO HLD-PROV-LUGAR.                 04660000
+044700                                                                  04670000
+044800     PERFORM 0400-SEARCH-4-MSA                                    04680000
+044800        THRU 0400-SEARCH-EXIT.                                    04681000
+044900                                                                  04690000
+045000     IF HLD-RTC = 00                                              04700000
+045100        PERFORM 0500-GET-HOSP-WAGE-INDEX                          04710000
+045200                THRU 0500-EXIT  VARYING MU2                       04720000
+045300                FROM MU1 BY 1 UNTIL                               04730000
+045400                MSA-MSA-LUGAR (MU2) NOT = SEARCH-MSA-LUGAR        04740000
+045500     ELSE                                                         04750000
+045600        MOVE 0                 TO HLD-PROV-WAGE-IND               04760000
+045700                                  HLD-BENE-WAGE-IND               04770000
+045800        GO TO 0350-EXIT.                                          04780000
+045900                                                                  04790000
+046000     IF HLD-PROV-WAGE-IND NOT NUMERIC                             04800000
+046100        MOVE '40'              TO HLD-RTC                         04810000
+046200        GO TO 0350-EXIT.                                          04820000
+046300                                                                  04830000
+046400                                                                  04840000
+046500****    GET BENE WAGE INDEX                                       04850000
+046600****    GET BENE WAGE INDEX                                       04860000
+046700                                                                  04870000
+046800     MOVE HLD-BENE-MSA         TO SEARCH-MSA.                     04880000
+046900                                                                  04890000
+047000     IF HLD-FROM-DATE-ALL < 19991001                              04900000
+047100        MOVE HLD-BENE-LUGAR    TO SEARCH-LUGAR                    04910000
+047200     ELSE                                                         04920000
+047300        MOVE SPACE             TO SEARCH-LUGAR.                   04930000
+047400                                                                  04940000
+047500     PERFORM 0400-SEARCH-4-MSA                                    04950000
+047500        THRU 0400-SEARCH-EXIT.                                    04951000
+047600                                                                  04960000
+047700     IF HLD-RTC = 00                                              04970000
+047800        PERFORM 0550-GET-BENE-WAGE-INDEX                          04980000
+047900                THRU 0550-EXIT  VARYING MU2                       04990000
+048000                FROM MU1 BY 1 UNTIL                               05000000
+048100                MSA-MSA-LUGAR (MU2) NOT = SEARCH-MSA-LUGAR        05010000
+048200     ELSE                                                         05020000
+048300        MOVE 0                   TO HLD-PROV-WAGE-IND             05030000
+048400                                    HLD-BENE-WAGE-IND             05040000
+048500        GO TO 0350-EXIT.                                          05050000
+048600                                                                  05060000
+048700     IF HLD-BENE-WAGE-IND NOT NUMERIC                             05070000
+048800        MOVE '50'                TO HLD-RTC                       05080000
+048900        GO TO 0350-EXIT.                                          05090000
+049000                                                                  05100000
+049100                                                                  05110000
+049200 0350-EXIT.  EXIT.                                                05120000
+049300                                                                  05130000
+049400 0375-GET-CBSA.                                                   05140000
+049500                                                                  05150000
+049600****    GET PROV-HOSP WAGE INDEX                                  05160000
+049700****    GET PROV-HOSP WAGE INDEX                                  05170000
+049800****    AS OF 01/01/2008 PROV CBSA ONLY COMES FROM CLAIM          05180000
+049900     IF HLD-FROM-DATE-ALL < 20080101                              05190000
+050000       IF W-P-NEW-CBSA-GEO-RURAL1                                 05200000
+050100          MOVE '999'           TO SEARCH-CBSA-POS123              05210000
+050200          MOVE W-P-NEW-CBSA-GEO-RURAL2ND                          05220000
+050200                               TO SEARCH-CBSA-POS45               05221000
+050300       ELSE                                                       05230000
+050400          MOVE W-P-NEW-CBSA-GEO-LOC                               05240000
+050400                               TO SEARCH-CBSA                     05241000
+050500          MOVE W-P-NEW-CBSA-GEO-LOC                               05250000
+050500                               TO HLD-PROV-CBSA                   05251000
+050600     ELSE                                                         05260000
+050700          MOVE HLD-PROV-CBSA   TO SEARCH-CBSA.                    05270000
+050800                                                                  05280000
+050900                                                                  05290000
+051000****    CBSA BETWEEN 50000 AND 59999 NOT VALID FOR 2007           05300000
+051100****    CBSA BETWEEN 50000 AND 59999 NOT VALID FOR 2007           05310000
+051200                                                                  05320000
+051300     IF HLD-FROM-DATE-ALL > 20060930 AND                          05330000
+051400        HLD-PROV-CBSA > 49999 AND                                 05340000
+051500        HLD-PROV-CBSA < 99900                                     05350000
+051600        MOVE '30'              TO HLD-RTC                         05360000
+051700        GO TO 0375-EXIT.                                          05370000
+051800                                                                  05380000
+051900                                                                  05390000
+052000     PERFORM 0450-SEARCH-4-CBSA                                   05400000
+052000        THRU 0450-SEARCH-EXIT.                                    05401000
+052100                                                                  05410000
+052200     IF HLD-RTC = 00                                              05420000
+052300        PERFORM 0525-GET-HOSP-WAGE-INDEX                          05430000
+052400                THRU 0525-EXIT  VARYING CU2                       05440000
+052500                FROM CU1 BY 1 UNTIL                               05450000
+052600                M-CBSA (CU2) NOT = SEARCH-CBSA                    05460000
+052700     ELSE                                                         05470000
+052800        MOVE 0                 TO HLD-PROV-WAGE-IND               05480000
+052900                                  HLD-BENE-WAGE-IND               05490000
+053000        GO TO 0375-EXIT.                                          05500000
+053100                                                                  05510000
+053200     IF HLD-PROV-WAGE-IND NOT NUMERIC                             05520000
+053300        MOVE '40'          TO HLD-RTC                             05530000
+053400        GO TO 0375-EXIT.                                          05540000
+053500                                                                  05550000
+053600                                                                  05560000
+053700****    GET BENE WAGE INDEX                                       05570000
+053800****    GET BENE WAGE INDEX                                       05580000
+053900                                                                  05590000
+054000     MOVE HLD-BENE-CBSA    TO SEARCH-CBSA.                        05600000
+054100                                                                  05610000
+054200****    CBSA BETWEEN 50000 AND 59999 NOT VALID FOR 2007           05620000
+054300****    CBSA BETWEEN 50000 AND 59999 NOT VALID FOR 2007           05630000
+054400                                                                  05640000
+054500     IF HLD-FROM-DATE-ALL > 20060930 AND                          05650000
+054600        HLD-BENE-CBSA > 49999 AND                                 05660000
+054700        HLD-BENE-CBSA < 99900                                     05670000
+054800        MOVE '30'          TO HLD-RTC                             05680000
+054900        GO                 TO 0375-EXIT.                          05690000
+055000                                                                  05700000
+055100     PERFORM 0450-SEARCH-4-CBSA                                   05710000
+055100        THRU 0450-SEARCH-EXIT.                                    05711000
+055200                                                                  05720000
+055300     IF HLD-RTC = 00                                              05730000
+055400        PERFORM 0575-GET-BENE-WAGE-INDEX                          05740000
+055500           THRU 0575-EXIT                                         05750008
+055500               VARYING CU2                                        05751007
+055600                  FROM CU1 BY 1 UNTIL                             05760007
+055700                       M-CBSA (CU2) NOT = SEARCH-CBSA             05770007
+055800     ELSE                                                         05780000
+055900        MOVE 0             TO HLD-PROV-WAGE-IND                   05790000
+056000                              HLD-BENE-WAGE-IND                   05800000
+056100        GO TO 0375-EXIT.                                          05810000
+056200                                                                  05820000
+056300     IF HLD-BENE-WAGE-IND NOT NUMERIC                             05830000
+056400        MOVE '50'          TO HLD-RTC                             05840000
+056500        GO TO 0375-EXIT.                                          05850000
+056600                                                                  05860000
+056700     PERFORM 1000-CALL                                            05870000
+056700        THRU 1000-EXIT.                                           05871000
+056800                                                                  05880000
+056900 0375-EXIT.  EXIT.                                                05890000
+057000                                                                  05900000
+057100 0400-SEARCH-4-MSA.                                               05910000
+057200****   SEARCH FOR MSA                                             05920000
+057300     SET MU1               TO 1.                                  05930000
+057400     SEARCH M-MSA-DATA VARYING MU1                                05940000
+057500            AT END                                                05950000
+057600                MOVE 30    TO HLD-RTC                             05960000
+058100                                                                  05961000
+058100                                                                  05981000
+057900     WHEN MSA-MSA-LUGAR (MU1) = SEARCH-MSA-LUGAR                  05990000
+058000          SET MU2          TO MU1.                                06000000
+058100                                                                  06010000
+058200 0400-SEARCH-EXIT.  EXIT.                                         06020000
+058300                                                                  06030000
+058400 0450-SEARCH-4-CBSA.                                              06040000
+058500****   SEARCH FOR CBSA                                            06050000
+059700                                                                  06051000
+058600     SET CU1               TO 1.                                  06060000
+059700                                                                  06061000
+059700                                                                  06091000
+059000     SEARCH M-CBSA-DATA VARYING CU1                               06100000
+059100            AT END                                                06110000
+059200                MOVE 30    TO HLD-RTC                             06120000
+059700                                                                  06121000
+059700                                                                  06141000
+059500     WHEN M-CBSA (CU1) = SEARCH-CBSA                              06150000
+059600          SET CU2          TO CU1.                                06160000
+059700                                                                  06170000
+059800 0450-SEARCH-EXIT.  EXIT.                                         06180000
+059900                                                                  06190000
+060000 0500-GET-HOSP-WAGE-INDEX.                                        06200000
+060400                                                                  06201007
+060100****   LOOKUP FOR MSA                                             06210000
+060200     IF HLD-FROM-DATE-ALL NOT < MSA-EFFDTE (MU2)                  06220000
+060300        MOVE MSA-WAGE-IND (MU2)                                   06230000
+060300                           TO HLD-PROV-WAGE-IND.                  06231000
+060400                                                                  06240000
+060500 0500-EXIT.   EXIT.                                               06250000
+060600                                                                  06260000
+060700 0525-GET-HOSP-WAGE-INDEX.                                        06270000
+061100                                                                  06271007
+060800****   LOOKUP FOR CBSA                                            06280000
+060900     IF HLD-FROM-DATE-ALL NOT < M-CBSA-EFFDTE (CU2)               06290000
+061000        MOVE M-CBSA-WAGE-IND (CU2)                                06300000
+061000                           TO HLD-PROV-WAGE-IND.                  06301000
+061100                                                                  06310000
+061200 0525-EXIT.   EXIT.                                               06320000
+061300                                                                  06330000
+061400 0550-GET-BENE-WAGE-INDEX.                                        06340000
+061800                                                                  06341007
+061500****   LOOKUP FOR MSA                                             06350000
+061600     IF HLD-FROM-DATE-ALL NOT < MSA-EFFDTE (MU2)                  06360000
+061700        MOVE MSA-WAGE-IND (MU2)                                   06370000
+061700                           TO HLD-BENE-WAGE-IND.                  06371000
+061800                                                                  06380000
+061900 0550-EXIT.   EXIT.                                               06390000
+062000                                                                  06400000
+062100 0575-GET-BENE-WAGE-INDEX.                                        06410000
+062500                                                                  06411007
+062200****   LOOKUP FOR CBSA                                            06420000
+062300     IF HLD-FROM-DATE-ALL NOT < M-CBSA-EFFDTE (CU2)               06430000
+062400        MOVE M-CBSA-WAGE-IND (CU2)                                06440000
+062400                           TO HLD-BENE-WAGE-IND.                  06441000
+062500                                                                  06450000
+062600 0575-EXIT.   EXIT.                                               06460000
+062700                                                                  06470000
+062800 0700-GET-PROVIDER.                                               06480000
+062900***************************************************************   06490000
+063000*    ON A PROVIDER BREAK:                                     *   06500000
+063100*    FIND THE PROVIDER MSA AND LUGAR ELEMENTS                 *   06510000
+063200*    FILE MUST BE PROV-NO EFF-DATE SEQUENCE                   *   06520000
+063300***************************************************************   06530000
+064700                                                                  06531007
+063400     IF  HLD-PROV-NO NOT = P-NEW-PROVIDER-NO                      06540000
+063500         SET PX2               TO 1                               06550007
+063600         SEARCH PROV-ENTRIES VARYING PX2                          06560000
+063700             AT END                                               06570000
+063800                 MOVE 51       TO HLD-RTC                         06580007
+063900                 GO TO 0700-EXIT                                  06590000
+064000             WHEN HLD-PROV-NO = PROV-NO (PX2)                     06600000
+064100                 MOVE 00       TO HLD-RTC.                        06610007
+064700                                                                  06611007
+064200     MOVE PROV-DATA1 (PX2)     TO PROV-NEWREC-HOLD1.              06620007
+064300     SET PD2                   TO PX2.                            06630007
+064400     SET PD3                   TO PX2.                            06640007
+064500     MOVE PROV-DATA2 (PD2)     TO PROV-NEWREC-HOLD2.              06650007
+064600     MOVE PROV-DATA3 (PD3)     TO PROV-NEWREC-HOLD3.              06660007
+064700                                                                  06670000
+064800     PERFORM 0800-GET-CURR-PROV                                   06680007
+064800        THRU 0800-EXIT                                            06681009
+064800             VARYING PX3                                          06682007
+064900             FROM PX2 BY 1 UNTIL PROV-NO (PX3) NOT =              06690007
+065000                  HLD-PROV-NO OR PROV-NO (PX3) = '999999'.        06700007
+065100                                                                  06710000
+065200 0700-EXIT.  EXIT.                                                06720000
+065300                                                                  06730000
+065400 0800-GET-CURR-PROV.                                              06740000
+065300                                                                  06741007
+065500     IF HLD-FROM-DATE-ALL NOT < PROV-EFF-DATE (PX3)               06750000
+065600         MOVE PROV-DATA1 (PX3) TO PROV-NEWREC-HOLD1               06760000
+065700         SET PD2               TO PX3                             06770000
+065800         SET PD3               TO PX3                             06780000
+065900         MOVE PROV-DATA2 (PD2) TO PROV-NEWREC-HOLD2               06790000
+066000         MOVE PROV-DATA3 (PD3) TO PROV-NEWREC-HOLD3.              06800000
+066100                                                                  06810000
+066200                                                                  06820000
+066300 0800-EXIT.  EXIT.                                                06830000
+066400                                                                  06840000
+066500                                                                  06850000
+066600 1000-CALL.                                                       06860000
+066700                                                                  06870000
+066800     CALL HOSPR140             USING HOLD-BILL-DATA.              06880001
+066900                                                                  06890000
+067000                                                                  06900000
+067100 1000-EXIT.   EXIT.                                               06910000
+067200                                                                  06920000
+067300******        L A S T   S O U R C E   S T A T E M E N T   *****   06930000
+067400***************************************************************   06940000
+
